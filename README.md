@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧上肢復健訓練系統 - 雲端監控端</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background: #2c3e50;
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .card.alert {
+            background-color: #e74c3c !important;
+            color: white !important;
+        }
+        .label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .value {
+            font-size: 3.5rem;
+            font-weight: 900;
+        }
+        .unit {
+            font-size: 1rem;
+            margin-left: 5px;
+        }
+        .chart-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .status-bar {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1> 智慧上肢復健雲端監控系統</h1>
+        <div id="current-time">正在讀取時間...</div>
+    </div>
+
+    <div class="dashboard">
+        <div class="card" id="hr-card" style="border-top: 8px solid #e74c3c;">
+            <span class="label" id="hr-label" style="color: #e74c3c;"> 即時心率</span>
+            <span class="value" id="hr-val">--</span>
+            <span class="unit">BPM</span>
+        </div>
+
+        <div class="card" style="border-top: 8px solid #3498db;">
+            <span class="label" style="color: #3498db;"> 血氧濃度</span>
+            <span class="value" id="spo2-val">--</span>
+            <span class="unit">%</span>
+        </div>
+
+        <div class="card" style="border-top: 8px solid #f39c12;">
+            <span class="label" style="color: #f39c12;">⚙️ 設備狀態</span>
+            <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;" id="mode-val">等待連線...</div>
+            <div style="font-size: 1.2rem; color: #7f8c8d;" id="rpm-val">-- RPM</div>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <canvas id="hrChart" height="100"></canvas>
+        <div class="status-bar" id="sync-status">雲端同步狀態：等待中...</div>
+    </div>
+</div>
+
+<script>
+    // 🔗 這裡換成你們的 Firebase 網址 (記得結尾要有 .json)
+    const FIREBASE_URL = "https://dsp-rehab-iot-default-rtdb.firebaseio.com/.json";
+
+    // --- 圖表初始化 ---
+    const ctx = document.getElementById('hrChart').getContext('2d');
+    const hrHistory = Array(30).fill(0);
+    const hrChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(30).fill(''),
+            datasets: [{
+                label: '心率趨勢 (BPM)',
+                data: hrHistory,
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: false,
+            scales: { y: { min: 40, max: 160 } }
+        }
+    });
+
+    // --- 每秒向雲端抓資料 ---
+    async function updateData() {
+        try {
+            const response = await fetch(FIREBASE_URL);
+            const data = await response.json();
+            
+            if (data) {
+                const hr = data.HeartRate || 0;
+                const spo2 = data.SpO2 || 0;
+                const rpm = data.RPM || 0;
+                const mode = data.CurrentMode || "未運行";
+
+                // 更新文字顯示
+                document.getElementById('hr-val').innerText = hr;
+                document.getElementById('spo2-val').innerText = spo2;
+                document.getElementById('rpm-val').innerText = rpm + " RPM";
+                document.getElementById('mode-val').innerText = mode;
+                
+                // 智慧警報變色 (心率 > 100)
+                const hrCard = document.getElementById('hr-card');
+                const hrLabel = document.getElementById('hr-label');
+                if (hr > 100) {
+                    hrCard.classList.add('alert');
+                    hrLabel.style.color = 'white';
+                } else {
+                    hrCard.classList.remove('alert');
+                    hrLabel.style.color = '#e74c3c';
+                }
+
+                // 更新圖表
+                hrHistory.push(hr);
+                hrHistory.shift();
+                hrChart.update();
+
+                document.getElementById('sync-status').innerText = "雲端同步狀態：正常更新中 (" + new Date().toLocaleTimeString() + ")";
+            }
+        } catch (e) {
+            document.getElementById('sync-status').innerText = "雲端同步狀態：連線失敗";
+        }
+    }
+
+    // 更新時鐘
+    setInterval(() => {
+        document.getElementById('current-time').innerText = new Date().toLocaleString();
+    }, 1000);
+
+    // 每秒抓一次資料
+    setInterval(updateData, 1000);
+</script>
+
+</body>
+</html>
