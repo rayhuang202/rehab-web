@@ -6,7 +6,7 @@
     <title>智慧上肢復健雲端監控</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 基礎設定：完全對齊 PyQt 的字體與背景色 */
+        /* 基礎設定 */
         body {
             font-family: 'Microsoft JhengHei', Arial, sans-serif;
             background-color: #F4F7F6;
@@ -15,256 +15,195 @@
             color: #2C3E50;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         /* 1. 頂部標題與時鐘 */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 22pt;
-            margin: 0;
-            color: #2C3E50;
-        }
-        .clock {
-            font-size: 14pt;
-            font-weight: bold;
-            color: #7F8C8D;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { font-size: 22pt; margin: 0; color: #2C3E50; }
+        .clock { font-size: 14pt; font-weight: bold; color: #7F8C8D; }
 
-        /* 2. 病歷區 (仿 QGroupBox) */
+        /* 2. 病歷區 */
         .info-group {
-            background-color: white;
-            border: 2px solid #D5D8DC;
-            border-radius: 10px;
-            padding: 20px 15px 15px 15px;
-            position: relative;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            background-color: white; border: 2px solid #D5D8DC; border-radius: 10px;
+            padding: 20px 15px 15px 15px; position: relative; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
         }
-        .info-title {
-            position: absolute;
-            top: -12px;
-            left: 15px;
-            background-color: white;
-            padding: 0 5px;
-            color: #34495E;
-            font-weight: bold;
-            font-size: 12pt;
-        }
-        .info-group label {
-            font-weight: bold;
-            color: black;
-        }
-        .info-group input {
-            border: 1px solid #BDC3C7;
-            border-radius: 5px;
-            padding: 8px;
-            font-size: 14px;
-            color: black;
-            outline: none;
-        }
-        .btn-red {
-            background-color: #E74C3C;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-weight: bold;
-            font-size: 12pt;
-            cursor: pointer;
-            margin-left: auto; /* 推到最右邊 */
-        }
-        .btn-green {
-            background-color: #27AE60;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-weight: bold;
-            font-size: 12pt;
-            cursor: pointer;
-        }
+        .info-title { position: absolute; top: -12px; left: 15px; background-color: white; padding: 0 5px; font-weight: bold; font-size: 12pt; }
+        .info-group label { font-weight: bold; }
+        .info-group input { border: 1px solid #BDC3C7; border-radius: 5px; padding: 8px; font-size: 14px; outline: none; }
+        .btn-red { background-color: #E74C3C; color: white; border: none; border-radius: 5px; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-left: auto; }
 
         /* 3. 數據卡片區 */
-        .data-layout {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .data-card {
-            flex: 1;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .card-title {
-            font-size: 12pt;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .card-value {
-            font-size: 35pt;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
-            white-space: pre-line; /* 支援換行 */
-        }
-
-        /* 個別卡片顏色設定 */
+        .data-layout { display: flex; gap: 15px; margin-bottom: 20px; }
+        .data-card { flex: 1; border-radius: 10px; padding: 20px; text-align: center; }
+        .card-title { font-size: 12pt; font-weight: bold; margin-bottom: 10px; }
+        .card-value { font-size: 30pt; font-weight: bold; white-space: pre-line; }
         #hr-card { background-color: #FDEDEC; border: 1px solid #E74C3C; color: #E74C3C; }
         #spo2-card { background-color: #EBF5FB; border: 1px solid #3498DB; color: #3498DB; }
         #rpm-card { background-color: #FEF5E7; border: 1px solid #E67E22; color: #E67E22; }
-
-        /* 🚨 心率超標的紅底白字狀態 */
-        #hr-card.alert {
-            background-color: #E74C3C !important;
-            color: white !important;
-        }
+        #hr-card.alert { background-color: #E74C3C !important; color: white !important; }
 
         /* 4. 圖表區 */
-        .chart-group {
-            background-color: white;
-            border: 1px solid #D5D8DC;
-            border-radius: 10px;
-            padding: 15px;
+        .chart-group { background-color: white; border: 1px solid #D5D8DC; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+
+        /* 🌟 5. 歷史紀錄表格區 (本次新增) */
+        .history-group {
+            background-color: white; border: 1px solid #D5D8DC; border-radius: 10px; padding: 15px;
         }
+        .history-group h3 { margin-top: 0; color: #2C3E50; border-bottom: 2px solid #3498DB; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid #ECF0F1; }
+        th { background-color: #F8F9F9; font-weight: bold; color: #7F8C8D; }
+        tr:hover { background-color: #F4F6F7; }
+        
+        /* 模式專屬顏色標籤 */
+        .badge {
+            padding: 5px 10px; border-radius: 15px; color: white; font-size: 12px; font-weight: bold;
+        }
+        .btn-view {
+            background-color: #3498DB; color: white; border: none; border-radius: 5px; 
+            padding: 6px 12px; cursor: pointer; font-size: 12px;
+        }
+        .btn-view:hover { background-color: #2980B9; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>智慧上肢復健 - 雲端監控</h1>
+        <h1>智慧上肢復健 - 雲端監控中心</h1>
         <div class="clock" id="clock">YYYY-MM-DD HH:MM:SS</div>
     </div>
 
     <div class="info-group">
-        <div class="info-title">臨床病歷設定與紀錄控制</div>
-        <label>病歷號：</label>
-        <input type="text" placeholder="請輸入病歷號" disabled>
-        <label>姓名：</label>
-        <input type="text" placeholder="請輸入病患姓名" disabled>
-        <button class="btn-red">遠距監控中</button>
-        <button class="btn-green">雲端同步</button>
+        <div class="info-title">即時生理與設備監控</div>
+        <label>病歷號：</label><input type="text" value="A12345678" disabled>
+        <label>姓名：</label><input type="text" value="測試病患" disabled>
+        <button class="btn-red">🔴 遠距連線中</button>
     </div>
 
     <div class="data-layout">
-        <div class="data-card" id="hr-card">
-            <div class="card-title">即時心率 (BPM)</div>
-            <div class="card-value" id="hr-val">--</div>
-        </div>
-        <div class="data-card" id="spo2-card">
-            <div class="card-title">血氧濃度 (%)</div>
-            <div class="card-value" id="spo2-val">--</div>
-        </div>
-        <div class="data-card" id="rpm-card">
-            <div class="card-title">馬達轉速 (RPM)</div>
-            <div class="card-value" id="rpm-val">--<br>(未知)</div>
-        </div>
+        <div class="data-card" id="hr-card"><div class="card-title">即時心率 (BPM)</div><div class="card-value" id="hr-val">--</div></div>
+        <div class="data-card" id="spo2-card"><div class="card-title">血氧濃度 (%)</div><div class="card-value" id="spo2-val">--</div></div>
+        <div class="data-card" id="rpm-card"><div class="card-title">馬達轉速 (RPM)</div><div class="card-value" id="rpm-val">--</div></div>
     </div>
 
     <div class="chart-group">
-        <canvas id="hrChart" height="100"></canvas>
+        <canvas id="hrChart" height="80"></canvas>
+    </div>
+
+    <div class="history-group">
+        <h3>📂 歷史復健療程紀錄</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>療程時間</th>
+                    <th>訓練模式</th>
+                    <th>總時長</th>
+                    <th>總圈數</th>
+                    <th>平均轉速</th>
+                    <th>心率/血氧</th>
+                    <th>深度分析</th>
+                </tr>
+            </thead>
+            <tbody id="history-tbody">
+                <tr><td colspan="7" style="text-align: center;">載入資料中...</td></tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<script>
-    // ⚠️ 請確認這是你們的 Firebase 網址
-    const FIREBASE_URL = "https://dsp-rehab-iot-default-rtdb.firebaseio.com/.json";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // --- 時鐘功能 ---
+    // 🔗 你的 Firebase 設定
+    const firebaseConfig = { databaseURL: "https://dsp-rehab-iot-default-rtdb.firebaseio.com" };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // --- 1. 時鐘 ---
     function updateClock() {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('clock').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        document.getElementById('clock').innerText = now.toLocaleString('zh-TW', { hour12: false });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
 
-    // --- 圖表初始化 (仿 pyqtgraph 白底紅線風格) ---
+    // --- 2. 即時圖表 ---
     const ctx = document.getElementById('hrChart').getContext('2d');
     const hrHistory = Array(50).fill(0);
     const hrChart = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: Array(50).fill(''),
-            datasets: [{
-                label: '即時心率趨勢圖 (BPM)',
-                data: hrHistory,
-                borderColor: '#E74C3C', // 紅線
-                borderWidth: 3,
-                fill: false,
-                tension: 0, // 0 代表直線折線，仿照 pyqtgraph
-                pointRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            animation: false,
-            scales: {
-                y: { min: 50, max: 150, grid: { color: 'rgba(0,0,0,0.1)' } },
-                x: { grid: { color: 'rgba(0,0,0,0.1)' } }
-            },
-            plugins: {
-                legend: { display: false },
-                title: { display: true, text: '即時心率趨勢圖 (BPM)', align: 'start', color: '#000', font: { size: 14 } }
-            }
+        data: { labels: Array(50).fill(''), datasets: [{ label: '即時心率', data: hrHistory, borderColor: '#E74C3C', borderWidth: 3, fill: false, tension: 0, pointRadius: 0 }] },
+        options: { responsive: true, animation: false, scales: { y: { min: 50, max: 150 } }, plugins: { legend: { display: false } } }
+    });
+
+    // --- 3. 監聽即時數據 ---
+    let currentRpm = 0; let currentMode = "未知";
+    onValue(ref(db, 'HeartRate'), (s) => {
+        const hr = s.val() || 0;
+        document.getElementById('hr-val').innerText = hr;
+        hr > 130 ? document.getElementById('hr-card').classList.add('alert') : document.getElementById('hr-card').classList.remove('alert');
+        hrHistory.push(hr); hrHistory.shift(); hrChart.update();
+    });
+    onValue(ref(db, 'SpO2'), (s) => document.getElementById('spo2-val').innerText = s.val() || 0);
+    onValue(ref(db, 'RPM'), (s) => { currentRpm = s.val() || 0.0; document.getElementById('rpm-val').innerHTML = `${currentRpm}<br><span style="font-size:18pt">(${currentMode})</span>`; });
+    onValue(ref(db, 'CurrentMode'), (s) => { currentMode = s.val() || "未知"; document.getElementById('rpm-val').innerHTML = `${currentRpm}<br><span style="font-size:18pt">(${currentMode})</span>`; });
+
+    // --- 🌟 4. 抓取歷史紀錄並渲染表格 ---
+    function getModeColor(mode) {
+        if (!mode) return '#7F8C8D';
+        if (mode.includes('自動')) return '#27AE60'; // 綠色
+        if (mode.includes('阻力')) return '#E67E22'; // 橘色
+        if (mode.includes('自適應')) return '#8E44AD'; // 紫色
+        if (mode.includes('助力')) return '#F321DE'; // 粉紅
+        return '#7F8C8D'; // 停止或其他(灰色)
+    }
+
+    onValue(ref(db, 'History'), (snapshot) => {
+        const historyData = snapshot.val();
+        const tbody = document.getElementById('history-tbody');
+        tbody.innerHTML = ''; // 清空原本的「載入中...」文字
+
+        if (historyData) {
+            // 將 JSON 物件轉換為陣列，並依照時間從「最新到最舊」排序
+            const records = Object.keys(historyData).map(key => ({
+                id: key, ...historyData[key]
+            })).sort((a, b) => new Date(b.time) - new Date(a.time));
+
+            records.forEach(record => {
+                const tr = document.createElement('tr');
+                
+                // 格式化時間 (去掉秒數，讓版面更乾淨)
+                const dateObj = new Date(record.time);
+                const dateStr = dateObj.toLocaleString('zh-TW', { hour12: false, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                
+                // 產生專屬模式標籤
+                const modeColor = getModeColor(record.mode);
+                const modeBadge = `<span class="badge" style="background-color: ${modeColor}">${record.mode || '未知'}</span>`;
+
+                tr.innerHTML = `
+                    <td>${dateObj.getFullYear()}-${dateStr}</td>
+                    <td>${modeBadge}</td>
+                    <td><b>${record.duration || '00:00'}</b></td>
+                    <td>${record.totalLaps || 0} 圈</td>
+                    <td>${record.avgRpm || 0} RPM</td>
+                    <td>❤️ ${record.finalHeartRate || 0} / 💧 ${record.finalSpO2 || 0}%</td>
+                    <td>
+                        <button class="btn-view" onclick="alert('準備開發！這將會打開這筆 ${record.id} 的詳細轉速分析圖表')">
+                            📊 查看圖表
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #7F8C8D;">目前沒有任何歷史復健紀錄</td></tr>';
         }
     });
 
-    // --- 抓取 Firebase 資料 ---
-    async function fetchData() {
-        try {
-            const response = await fetch(FIREBASE_URL);
-            if (response.ok) {
-                const data = await response.json();
-                if (data) {
-                    const hr = data.HeartRate || 0;
-                    const spo2 = data.SpO2 || 0;
-                    const rpm = data.RPM || 0.0;
-                    const mode = data.CurrentMode || "自動";
-
-                    // 更新數字
-                    document.getElementById('hr-val').innerText = hr;
-                    document.getElementById('spo2-val').innerText = spo2;
-                    document.getElementById('rpm-val').innerHTML = `${rpm}<br>(${mode})`;
-
-                    // 🚨 智慧安全警示系統 (超過100變色)
-                    const hrCard = document.getElementById('hr-card');
-                    if (hr > 130) {
-                        hrCard.classList.add('alert');
-                    } else {
-                        hrCard.classList.remove('alert');
-                    }
-
-                    // 更新圖表
-                    hrHistory.push(hr);
-                    hrHistory.shift();
-                    hrChart.update();
-                }
-            }
-        } catch (e) {
-            console.log("資料同步中斷...");
-        }
-    }
-
-    setInterval(fetchData, 1000);
 </script>
 
 </body>
