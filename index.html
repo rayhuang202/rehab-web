@@ -130,7 +130,10 @@
 <div class="modal-overlay" id="chartModal">
     <div class="modal-content">
         <button class="close-btn" onclick="closeChartModal()">✖</button>
-        <h3 id="modal-title" style="margin-top: 0; color: #2C3E50;">療程詳細分析</h3>
+        <div class="modal-header">
+            <h3 id="modal-title" style="margin-top: 0; margin-bottom: 0; color: #2C3E50;">療程詳細分析</h3>
+            <button class="btn-export" onclick="exportCSV()">匯出 CSV 原始檔</button>
+        </div>
         <canvas id="detailChart" height="120"></canvas>
     </div>
 </div>
@@ -223,6 +226,7 @@
 
     // --- 5. 處理圖表彈出視窗 ---
     window.openChartModal = function(id) {
+        window.currentRecordId = id;
         const record = window.historyCache[id];
         if (!record || !record.dataLog) {
             alert("此筆紀錄缺乏詳細的過程數據");
@@ -280,9 +284,46 @@
         });
     };
 
-    window.closeChartModal = function() {
-        document.getElementById('chartModal').style.display = 'none';
-    };
+    window.exportCSV = function() {
+    const record = window.historyCache[window.currentRecordId];
+    if (!record || !record.dataLog) {
+        alert("無效的紀錄或缺乏詳細數據");
+        return;
+    }
+
+    // 建立 CSV 標題列
+    let csvContent = "時間戳記,訓練模式,檔位,轉速(RPM),心率(BPM),血氧(%)\n";
+    
+    // 解析資料並寫入每一列
+    const dataLog = Array.isArray(record.dataLog) ? record.dataLog : Object.values(record.dataLog);
+    dataLog.forEach(log => {
+        const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString('zh-TW', {hour12: false}) : "未知時間";
+        const mode = log.mode || "未知";
+        const gear = log.gear || 1;
+        const rpm = log.rpm || 0;
+        const hr = log.hr || 0;
+        const spo2 = log.spo2 || 0;
+        
+        csvContent += `${time},${mode},${gear},${rpm},${hr},${spo2}\n`;
+    });
+
+    // 加上 BOM 標記，避免 Excel 打開中文變亂碼
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
+    
+    // 建立隱藏的下載連結並觸發
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    const dateObj = new Date(record.time);
+    const fileName = `復健紀錄_${dateObj.getFullYear()}${(dateObj.getMonth()+1).toString().padStart(2,'0')}${dateObj.getDate().toString().padStart(2,'0')}.csv`;
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
 </script>
 
 </body>
