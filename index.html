@@ -91,9 +91,15 @@
 
     <div class="info-group">
         <div class="info-title">即時生理與設備監控</div>
-        <label>病歷號：</label><input type="text" value="A12345678" disabled>
-        <label>姓名：</label><input type="text" value="測試病患" disabled>
-        <button class="btn-red">遠距連線中</button>
+        <label>病歷號：</label><input type="text" value="A12345678" disabled style="width: 100px;">
+        <label>姓名：</label><input type="text" value="測試病患" disabled style="width: 80px;">
+        
+        <div style="margin-left: auto; display: flex; gap: 10px; align-items: center; border-left: 2px solid #ECF0F1; padding-left: 15px;">
+            <span style="font-weight: bold; color: #E74C3C;">醫師遠距處方：</span>
+            <button onclick="sendRemoteCommand('自動模式', 1)" style="background-color: #27AE60; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">啟動(1檔)</button>
+            <button onclick="sendRemoteCommand('阻力模式', 3)" style="background-color: #E67E22; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">阻力加強(3檔)</button>
+            <button onclick="sendRemoteCommand('停止', 0)" style="background-color: #E74C3C; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">緊急停止</button>
+        </div>
     </div>
 
     <div class="data-layout">
@@ -326,6 +332,22 @@
 };
     window.closeChartModal = function() {
         document.getElementById('chartModal').style.display = 'none';
+    };
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    window.sendRemoteCommand = function(mode, gear) {
+        if(confirm(`確定要對機台下達遠端指令嗎？\n模式：${mode}\n檔位：${gear}`)) {
+            const commandRef = ref(db, 'RemoteCommand');
+            // 寫入 Firebase
+            set(commandRef, {
+                mode: mode,
+                gear: gear,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                alert('遠端指令已發送！');
+            }).catch((error) => {
+                alert('發送失敗：' + error);
+            });
+        }
     };
 </script>
 </body>
