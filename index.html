@@ -7,41 +7,18 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* 基礎設定 */
-        .btn-export {
-            background-color: #27AE60; color: white; border: none; border-radius: 5px;
-            padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold;
-            margin-left: 15px;}
-        .btn-export:hover { background-color: #229954; }
-        .modal-header { display: flex; align-items: center; margin-bottom: 15px; }
-        body {
-            font-family: 'Microsoft JhengHei', Arial, sans-serif;
-            background-color: #F4F7F6;
-            margin: 0;
-            padding: 20px;
-            color: #2C3E50;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        /* 1. 頂部標題與時鐘 */
+        body { font-family: 'Microsoft JhengHei', Arial, sans-serif; background-color: #F4F7F6; margin: 0; padding: 20px; color: #2C3E50; }
+        .container { max-width: 1000px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header h1 { font-size: 22pt; margin: 0; color: #2C3E50; }
         .clock { font-size: 14pt; font-weight: bold; color: #7F8C8D; }
-
-        /* 2. 病歷區 */
-        .info-group {
-            background-color: white; border: 2px solid #D5D8DC; border-radius: 10px;
-            padding: 20px 15px 15px 15px; position: relative; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-        }
+        
+        /* 區塊樣式 */
+        .info-group { background-color: white; border: 2px solid #D5D8DC; border-radius: 10px; padding: 20px 15px 15px 15px; position: relative; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .info-title { position: absolute; top: -12px; left: 15px; background-color: white; padding: 0 5px; font-weight: bold; font-size: 12pt; }
         .info-group label { font-weight: bold; }
         .info-group input { border: 1px solid #BDC3C7; border-radius: 5px; padding: 8px; font-size: 14px; outline: none; }
-        .btn-red { background-color: #E74C3C; color: white; border: none; border-radius: 5px; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-left: auto; }
-
-        /* 3. 數據卡片區 */
+        
         .data-layout { display: flex; gap: 15px; margin-bottom: 20px; }
         .data-card { flex: 1; border-radius: 10px; padding: 20px; text-align: center; }
         .card-title { font-size: 12pt; font-weight: bold; margin-bottom: 10px; }
@@ -50,11 +27,9 @@
         #spo2-card { background-color: #EBF5FB; border: 1px solid #3498DB; color: #3498DB; }
         #rpm-card { background-color: #FEF5E7; border: 1px solid #E67E22; color: #E67E22; }
         #hr-card.alert { background-color: #E74C3C !important; color: white !important; }
-
-        /* 4. 圖表區 */
+        
         .chart-group { background-color: white; border: 1px solid #D5D8DC; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
-
-        /* 5. 歷史紀錄表格區 */
+        
         .history-group { background-color: white; border: 1px solid #D5D8DC; border-radius: 10px; padding: 15px; }
         .history-group h3 { margin-top: 0; color: #2C3E50; border-bottom: 2px solid #3498DB; padding-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -64,21 +39,15 @@
         .badge { padding: 5px 10px; border-radius: 15px; color: white; font-size: 12px; font-weight: bold; }
         .btn-view { background-color: #3498DB; color: white; border: none; border-radius: 5px; padding: 6px 12px; cursor: pointer; font-size: 12px; }
         .btn-view:hover { background-color: #2980B9; }
-
-        /* 6. 彈出視窗設定 */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content {
-            background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 800px;
-            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .close-btn {
-            position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer;
-            background: none; border: none; color: #7F8C8D;
-        }
+        
+        /* 彈出視窗樣式 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 800px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; background: none; border: none; color: #7F8C8D; }
         .close-btn:hover { color: #2C3E50; }
+        .modal-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .btn-export { background-color: #27AE60; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold; margin-left: 15px;}
+        .btn-export:hover { background-color: #229954; }
     </style>
 </head>
 <body>
@@ -96,8 +65,8 @@
         
         <div style="margin-left: auto; display: flex; gap: 10px; align-items: center; border-left: 2px solid #ECF0F1; padding-left: 15px;">
             <span style="font-weight: bold; color: #E74C3C;">醫師遠距處方：</span>
-            <button onclick="sendRemoteCommand('自動模式', 1)" style="background-color: #27AE60; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">啟動(1檔)</button>
-            <button onclick="sendRemoteCommand('阻力模式', 3)" style="background-color: #E67E22; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">阻力加強(3檔)</button>
+            <button onclick="sendRemoteCommand('自動模式', 1)" style="background-color: #27AE60; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">啟動(1檔)</button>
+            <button onclick="sendRemoteCommand('阻力模式', 3)" style="background-color: #E67E22; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">阻力加強(3檔)</button>
             <button onclick="sendRemoteCommand('停止', 0)" style="background-color: #E74C3C; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">緊急停止</button>
         </div>
     </div>
@@ -145,21 +114,22 @@
 </div>
 
 <script type="module">
+    // 嚴格確保 import 位於檔案頂部
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = { databaseURL: "https://dsp-rehab-iot-default-rtdb.firebaseio.com" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 全域變數供彈出視窗使用
     window.historyCache = {};
     let detailChartInstance = null;
 
     // --- 1. 時鐘 ---
     function updateClock() {
         const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleString('zh-TW', { hour12: false });
+        const clockEl = document.getElementById('clock');
+        if (clockEl) clockEl.innerText = now.toLocaleString('zh-TW', { hour12: false });
     }
     setInterval(updateClock, 1000); updateClock();
 
@@ -197,6 +167,7 @@
     onValue(ref(db, 'History'), (snapshot) => {
         const historyData = snapshot.val();
         const tbody = document.getElementById('history-tbody');
+        if (!tbody) return;
         tbody.innerHTML = '';
         window.historyCache = {}; 
 
@@ -206,7 +177,7 @@
             })).sort((a, b) => new Date(b.time) - new Date(a.time));
 
             records.forEach(record => {
-                window.historyCache[record.id] = record; // 存入暫存供圖表讀取
+                window.historyCache[record.id] = record; 
                 
                 const tr = document.createElement('tr');
                 const dateObj = new Date(record.time);
@@ -230,7 +201,7 @@
         }
     });
 
-    // --- 5. 處理圖表彈出視窗 ---
+    // --- 5. 視窗與圖表控制 ---
     window.openChartModal = function(id) {
         window.currentRecordId = id;
         const record = window.historyCache[id];
@@ -243,11 +214,8 @@
         const dateObj = new Date(record.time);
         document.getElementById('modal-title').innerText = `療程詳細分析 - ${dateObj.toLocaleString('zh-TW', { hour12: false })}`;
 
-        // 解析 dataLog
         const dataLog = Array.isArray(record.dataLog) ? record.dataLog : Object.values(record.dataLog);
-        const labels = [];
-        const rpmData = [];
-        const hrData = [];
+        const labels = []; const rpmData = []; const hrData = [];
 
         dataLog.forEach(log => {
             if (log.timestamp) {
@@ -258,92 +226,54 @@
             }
         });
 
-        // 繪製雙軸圖表
         const chartCtx = document.getElementById('detailChart').getContext('2d');
-        if (detailChartInstance) detailChartInstance.destroy(); // 清除舊圖表
+        if (detailChartInstance) detailChartInstance.destroy(); 
 
         detailChartInstance = new Chart(chartCtx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [
-                    {
-                        label: '轉速 (RPM)', data: rpmData,
-                        borderColor: '#3498DB', backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        yAxisID: 'y', tension: 0.2, borderWidth: 2, pointRadius: 2, fill: true
-                    },
-                    {
-                        label: '心率 (BPM)', data: hrData,
-                        borderColor: '#E74C3C', backgroundColor: 'transparent',
-                        yAxisID: 'y1', tension: 0.2, borderWidth: 2, pointRadius: 2
-                    }
+                    { label: '轉速 (RPM)', data: rpmData, borderColor: '#3498DB', backgroundColor: 'rgba(52, 152, 219, 0.1)', yAxisID: 'y', tension: 0.2, borderWidth: 2, pointRadius: 2, fill: true },
+                    { label: '心率 (BPM)', data: hrData, borderColor: '#E74C3C', backgroundColor: 'transparent', yAxisID: 'y1', tension: 0.2, borderWidth: 2, pointRadius: 2 }
                 ]
             },
-            options: {
-                responsive: true,
-                interaction: { mode: 'index', intersect: false },
-                scales: {
-                    y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '轉速 (RPM)' } },
-                    y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '心率 (BPM)' }, grid: { drawOnChartArea: false } }
-                }
-            }
+            options: { responsive: true, interaction: { mode: 'index', intersect: false }, scales: { y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '轉速 (RPM)' } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '心率 (BPM)' }, grid: { drawOnChartArea: false } } } }
         });
     };
 
-    window.exportCSV = function() {
-    const record = window.historyCache[window.currentRecordId];
-    if (!record || !record.dataLog) {
-        alert("無效的紀錄或缺乏詳細數據");
-        return;
-    }
-
-    // 建立 CSV 標題列
-    let csvContent = "時間戳記,訓練模式,檔位,轉速(RPM),心率(BPM),血氧(%)\n";
-    
-    // 解析資料並寫入每一列
-    const dataLog = Array.isArray(record.dataLog) ? record.dataLog : Object.values(record.dataLog);
-    dataLog.forEach(log => {
-        const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString('zh-TW', {hour12: false}) : "未知時間";
-        const mode = log.mode || "未知";
-        const gear = log.gear || 1;
-        const rpm = log.rpm || 0;
-        const hr = log.hr || 0;
-        const spo2 = log.spo2 || 0;
-        
-        csvContent += `${time},${mode},${gear},${rpm},${hr},${spo2}\n`;
-    });
-
-    // 加上 BOM 標記，避免 Excel 打開中文變亂碼
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
-    
-    // 建立隱藏的下載連結並觸發
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    const dateObj = new Date(record.time);
-    const fileName = `復健紀錄_${dateObj.getFullYear()}${(dateObj.getMonth()+1).toString().padStart(2,'0')}${dateObj.getDate().toString().padStart(2,'0')}.csv`;
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", fileName);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-};
     window.closeChartModal = function() {
         document.getElementById('chartModal').style.display = 'none';
     };
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // --- 6. CSV 匯出 ---
+    window.exportCSV = function() {
+        const record = window.historyCache[window.currentRecordId];
+        if (!record || !record.dataLog) { alert("無效的紀錄或缺乏詳細數據"); return; }
+        let csvContent = "時間戳記,訓練模式,檔位,轉速(RPM),心率(BPM),血氧(%)\n";
+        const dataLog = Array.isArray(record.dataLog) ? record.dataLog : Object.values(record.dataLog);
+        dataLog.forEach(log => {
+            const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString('zh-TW', {hour12: false}) : "未知時間";
+            csvContent += `${time},${log.mode || "未知"},${log.gear || 1},${log.rpm || 0},${log.hr || 0},${log.spo2 || 0}\n`;
+        });
+        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const dateObj = new Date(record.time);
+        link.href = URL.createObjectURL(blob);
+        link.download = `復健紀錄_${dateObj.getFullYear()}${(dateObj.getMonth()+1).toString().padStart(2,'0')}${dateObj.getDate().toString().padStart(2,'0')}.csv`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    };
+
+    // --- 7. 遠端指令發送 ---
     window.sendRemoteCommand = function(mode, gear) {
         if(confirm(`確定要對機台下達遠端指令嗎？\n模式：${mode}\n檔位：${gear}`)) {
             const commandRef = ref(db, 'RemoteCommand');
-            // 寫入 Firebase
             set(commandRef, {
                 mode: mode,
                 gear: gear,
                 timestamp: new Date().toISOString()
             }).then(() => {
-                alert('遠端指令已發送！');
+                alert('遠端指令已發送！手機 App 將立即同步硬體。');
             }).catch((error) => {
                 alert('發送失敗：' + error);
             });
