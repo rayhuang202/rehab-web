@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧上肢復健雲端監控</title>
+    <title>上肢復健雲端監控</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* 基礎設定 */
@@ -86,28 +86,28 @@
 
 <div class="container">
     <div class="header">
-        <h1>智慧上肢復健 - 雲端監控中心</h1>
+        <h1>復健 - 監控</h1>
         <div class="clock" id="clock">YYYY-MM-DD HH:MM:SS</div>
     </div>
 
     <div class="info-group">
         <div class="info-title">即時生理與設備監控</div>
-        <label>病歷號：</label><input type="text" value="A12345678" disabled style="width: 100px;">
+        <label>身分證：</label><input type="text" value="A12345678" disabled style="width: 100px;">
         <label>姓名：</label><input type="text" value="測試病患" disabled style="width: 80px;">
         
 <div style="margin-left: auto; display: flex; gap: 8px; align-items: center; border-left: 2px solid #ECF0F1; padding-left: 15px; flex-wrap: wrap;">
-            <span style="font-weight: bold; color: #E74C3C; font-size: 14px;">醫師遠距處方：</span>
+            <span style="font-weight: bold; color: #E74C3C; font-size: 14px;">遠端啟動：</span>
             
             <button class="btn-pill green" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('自動模式', 1)">
-                <span class="material-icons" style="font-size: 16px;">play_arrow</span> 啟動自動
+                <span class="material-icons" style="font-size: 16px;">play_arrow</span> 自動模式
             </button>
             
             <button class="btn-pill orange" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('阻力模式', 3)">
-                <span class="material-icons" style="font-size: 16px;">fitness_center</span> 阻力訓練
+                <span class="material-icons" style="font-size: 16px;">fitness_center</span> 阻力模式
             </button>
 
             <button class="btn-pill blue" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('助力模式', 1)">
-                <span class="material-icons" style="font-size: 16px;">bolt</span> 電動助力
+                <span class="material-icons" style="font-size: 16px;">bolt</span> 助力模式
             </button>
 
             <button class="btn-pill purple" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('自適應模式', 1)">
