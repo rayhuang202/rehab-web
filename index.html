@@ -46,8 +46,40 @@
         .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; background: none; border: none; color: #7F8C8D; }
         .close-btn:hover { color: #2C3E50; }
         .modal-header { display: flex; align-items: center; margin-bottom: 15px; }
+        /* 遠距控制按鈕 (膠囊型 UI 設計) */
+        .btn-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px; /* 圖示與文字的間距 */
+            padding: 8px 18px;
+            border-radius: 50px; /* 創造完美的膠囊圓角 */
+            border: none;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 預設陰影 */
+            transition: all 0.2s ease; /* 增加動畫過渡效果 */
+        }
+        .btn-pill:hover {
+            transform: translateY(-2px); /* 滑鼠游標經過時微幅上浮 */
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3); /* 加深陰影產生立體感 */
+        }
+        .btn-pill:active {
+            transform: translateY(0); /* 點擊時壓下去的視覺回饋 */
+        }
+        /* 定義各種狀態的顏色 */
+        .btn-pill.green { background-color: #4CAF50; }
+        .btn-pill.orange { background-color: #FF9800; }
+        .btn-pill.blue { background-color: #2196F3; } 
+        .btn-pill.purple { background-color: #9C27B0; } 
+        .btn-pill.red { background-color: #F44336; }
         .btn-export { background-color: #27AE60; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold; margin-left: 15px;}
         .btn-export:hover { background-color: #229954; }
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </style>
 </head>
 <body>
@@ -63,11 +95,28 @@
         <label>病歷號：</label><input type="text" value="A12345678" disabled style="width: 100px;">
         <label>姓名：</label><input type="text" value="測試病患" disabled style="width: 80px;">
         
-        <div style="margin-left: auto; display: flex; gap: 10px; align-items: center; border-left: 2px solid #ECF0F1; padding-left: 15px;">
-            <span style="font-weight: bold; color: #E74C3C;">醫師遠距處方：</span>
-            <button onclick="sendRemoteCommand('自動模式', 1)" style="background-color: #27AE60; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">啟動(1檔)</button>
-            <button onclick="sendRemoteCommand('阻力模式', 3)" style="background-color: #E67E22; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">阻力加強(3檔)</button>
-            <button onclick="sendRemoteCommand('停止', 0)" style="background-color: #E74C3C; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">緊急停止</button>
+<div style="margin-left: auto; display: flex; gap: 8px; align-items: center; border-left: 2px solid #ECF0F1; padding-left: 15px; flex-wrap: wrap;">
+            <span style="font-weight: bold; color: #E74C3C; font-size: 14px;">醫師遠距處方：</span>
+            
+            <button class="btn-pill green" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('自動模式', 1)">
+                <span class="material-icons" style="font-size: 16px;">play_arrow</span> 啟動自動
+            </button>
+            
+            <button class="btn-pill orange" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('阻力模式', 3)">
+                <span class="material-icons" style="font-size: 16px;">fitness_center</span> 阻力訓練
+            </button>
+
+            <button class="btn-pill blue" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('助力模式', 1)">
+                <span class="material-icons" style="font-size: 16px;">bolt</span> 電動助力
+            </button>
+
+            <button class="btn-pill purple" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('自適應模式', 1)">
+                <span class="material-icons" style="font-size: 16px;">psychology</span> 智慧模式
+            </button>
+            
+            <button class="btn-pill red" style="padding: 6px 14px; font-size: 14px;" onclick="sendRemoteCommand('停止', 0)">
+                <span class="material-icons" style="font-size: 16px;">stop_circle</span> 緊急停止
+            </button>
         </div>
     </div>
 
