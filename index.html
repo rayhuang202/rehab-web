@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>上肢復健雲端監控</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         /* 基礎設定 */
         body { font-family: 'Microsoft JhengHei', Arial, sans-serif; background-color: #F4F7F6; margin: 0; padding: 20px; color: #2C3E50; }
@@ -18,6 +19,7 @@
         .info-title { position: absolute; top: -12px; left: 15px; background-color: white; padding: 0 5px; font-weight: bold; font-size: 12pt; }
         .info-group label { font-weight: bold; }
         .info-group input { border: 1px solid #BDC3C7; border-radius: 5px; padding: 8px; font-size: 14px; outline: none; }
+        .info-group input:focus { border-color: #3498DB; }
         
         .data-layout { display: flex; gap: 15px; margin-bottom: 20px; }
         .data-card { flex: 1; border-radius: 10px; padding: 20px; text-align: center; }
@@ -77,9 +79,6 @@
         .btn-pill.red { background-color: #F44336; }
         .btn-export { background-color: #27AE60; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold; margin-left: 15px;}
         .btn-export:hover { background-color: #229954; }
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </style>
 </head>
 <body>
@@ -92,8 +91,8 @@
 
     <div class="info-group">
         <div class="info-title">即時生理與設備監控</div>
-        <label>身分證：</label><input type="text" value="A12345678" disabled style="width: 100px;">
-        <label>姓名：</label><input type="text" value="測試病患" disabled style="width: 80px;">
+        <label>身分證：</label><input type="text" id="patient-id" placeholder="請輸入身分證字號" maxlength="10" style="width: 130px;">
+        <label>姓名：</label><input type="text" id="patient-name" placeholder="請輸入患者姓名" maxlength="20" style="width: 110px;">
         
 <div style="margin-left: auto; display: flex; gap: 8px; align-items: center; border-left: 2px solid #ECF0F1; padding-left: 15px; flex-wrap: wrap;">
             <span style="font-weight: bold; color: #E74C3C; font-size: 14px;">遠端啟動：</span>
@@ -299,7 +298,10 @@
     window.exportCSV = function() {
         const record = window.historyCache[window.currentRecordId];
         if (!record || !record.dataLog) { alert("無效的紀錄或缺乏詳細數據"); return; }
-        let csvContent = "時間戳記,訓練模式,檔位,轉速(RPM),心率(BPM),血氧(%)\n";
+        const patientName = document.getElementById('patient-name').value || "未填寫";
+        const patientId = document.getElementById('patient-id').value || "未填寫";
+        let csvContent = `患者姓名,${patientName}\n身分證字號,${patientId}\n\n`;
+        csvContent += "時間戳記,訓練模式,檔位,轉速(RPM),心率(BPM),血氧(%)\n";
         const dataLog = Array.isArray(record.dataLog) ? record.dataLog : Object.values(record.dataLog);
         dataLog.forEach(log => {
             const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString('zh-TW', {hour12: false}) : "未知時間";
