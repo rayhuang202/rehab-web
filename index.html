@@ -202,14 +202,17 @@
     onValue(ref(db, 'RPM'), (s) => { currentRpm = s.val() || 0.0; document.getElementById('rpm-val').innerHTML = `${currentRpm}<br><span style="font-size:18pt">(${currentMode})</span>`; });
     onValue(ref(db, 'CurrentMode'), (s) => { currentMode = s.val() || "未知"; document.getElementById('rpm-val').innerHTML = `${currentRpm}<br><span style="font-size:18pt">(${currentMode})</span>`; });
 
-    // --- 4. 抓取歷史紀錄並渲染表格 ---
+// --- 4. 抓取歷史紀錄並渲染表格 ---
     function getModeColor(mode) {
-        if (!mode) return '#7F8C8D';
-        if (mode.includes('自動')) return '#27AE60';
-        if (mode.includes('阻力')) return '#E67E22';
-        if (mode.includes('自適應')) return '#8E44AD';
-        if (mode.includes('助力')) return '#F321DE';
-        return '#7F8C8D';
+        // 🛡️ 嚴格防禦性編程：無論 Firebase 傳來數字、null 還是 undefined，全部強制轉成字串！
+        const modeStr = String(mode || ''); 
+        
+        if (modeStr === '') return '#7F8C8D';
+        if (modeStr.includes('自動')) return '#27AE60';
+        if (modeStr.includes('阻力')) return '#E67E22';
+        if (modeStr.includes('智慧') || modeStr.includes('自適應')) return '#9C27B0';
+        if (modeStr.includes('助力')) return '#2196F3';
+        return '#7F8C8D'; // 遇到無法辨識的髒資料，統一給予灰色防呆
     }
 
     onValue(ref(db, 'History'), (snapshot) => {
